@@ -37,6 +37,41 @@
     .qty-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     @media (max-width: 720px){ .qty-grid { grid-template-columns: 1fr; } }
 
+    .option-row{
+      display:flex; align-items:center; gap:12px;
+      padding: 10px 12px;
+      border: 1px solid #e6eaf0;
+      border-radius: 12px;
+      background:#fafbfc;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    .option-row .check{
+      display:flex; align-items:center; gap:8px;
+      min-width: 120px;
+      font-size: 13px; color:#222;
+      white-space: nowrap;
+    }
+    .option-row .check input{ width:18px; height:18px; }
+    .option-row .field{ flex:1; min-width: 220px; }
+    .option-row .field label{ margin:0 0 4px; font-size:12px; color:#555; }
+    .option-row .field .sub{ font-size:12px; color:#999; margin-top:4px; }
+
+    .room-tools { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:8px; }
+    .room-list { display:grid; gap:8px; }
+    .room-item {
+      display:grid;
+      grid-template-columns: minmax(120px, 1fr) minmax(110px, 1fr) auto;
+      gap:8px;
+      align-items:end;
+      padding:10px;
+      border:1px solid #e6eaf0;
+      border-radius:12px;
+      background:#fff;
+    }
+    .room-item button { min-width:64px; padding:10px 12px; }
+    @media (max-width: 720px){ .room-item { grid-template-columns: 1fr; } }
+
     .action-row{ display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
     .action-row button{ min-width: 96px; }
 
@@ -96,13 +131,29 @@
       <h2>장수 입력</h2>
       <div class="qty-grid">
         <div>
-          <label>600 장수</label>
-          <input id="qty600" type="number" min="0" step="1" placeholder="0" />
-        </div>
-        <div>
           <label>1200 장수</label>
           <input id="qty1200" type="number" min="0" step="0.5" placeholder="0" />
+          <div class="hint">1200 제품 쿠폰 적용가 계산에 반영됩니다.</div>
+        </div>
+        <div>
+          <label>600 장수</label>
+          <input id="qty600" type="number" min="0" step="1" placeholder="0" />
           <div id="hint600" class="hint" style="color:#999;">예상 600장수(1200×4): -</div>
+        </div>
+      </div>
+
+      <div class="option-row">
+        <label class="check">
+          <input id="optRoom" type="checkbox" />
+          방 추가(옵션)
+        </label>
+
+        <div class="field">
+          <div class="room-tools">
+            <button class="secondary" id="btnAddRoom" type="button" disabled>방 추가</button>
+            <div class="sub" id="roomsHint">체크 시 방 이름과 600 장수를 여러 개 추가할 수 있습니다.</div>
+          </div>
+          <div id="roomList" class="room-list"></div>
         </div>
       </div>
 
@@ -156,6 +207,9 @@
     },
   ];
 
+  const ROOM_PRODUCTS = PRODUCTS.filter((product) => product.qtyKey === "qty600");
+  const MAX_ROOMS = 4;
+
   const $ = (id) => document.getElementById(id);
 
   function formatWon(n) {
@@ -191,6 +245,69 @@
     return preset;
   }
 
+  function getRoomCount() {
+    return document.querySelectorAll(".room-item").length;
+  }
+
+  function getRooms() {
+    return Array.from(document.querySelectorAll(".room-item")).map((item, index) => {
+      const name = item.querySelector(".room-name").value.trim() || `방 ${index + 1}`;
+      const qty = safeNum(item.querySelector(".room-qty").value);
+      return { name, qty };
+    }).filter((room) => room.qty > 0);
+  }
+
+  function updateRoomHint() {
+    const hint = $("roomsHint");
+    if (!hint) return;
+    hint.textContent = `체크 시 방 이름과 600 장수를 여러 개 추가할 수 있습니다. (현재 ${getRoomCount()}개 / 최대 ${MAX_ROOMS}개)`;
+  }
+
+  function updateRoomButton() {
+    const btn = $("btnAddRoom");
+    if (!btn) return;
+    btn.disabled = !$("optRoom").checked || getRoomCount() >= MAX_ROOMS;
+    updateRoomHint();
+  }
+
+  function addRoom(name = "", qty = "") {
+    if (getRoomCount() >= MAX_ROOMS) return;
+
+    const roomList = $("roomList");
+    const roomNo = roomList.children.length + 1;
+    const item = document.createElement("div");
+    item.className = "room-item";
+    item.innerHTML = `
+      <div>
+        <label>방 이름</label>
+        <input class="room-name" placeholder="방 ${roomNo}" value="${name}" />
+      </div>
+      <div>
+        <label>방 600 장수</label>
+        <input class="room-qty" type="number" min="0" step="1" placeholder="30" value="${qty}" />
+      </div>
+      <button class="secondary room-delete" type="button">삭제</button>
+    `;
+
+    item.querySelector(".room-name").addEventListener("input", generate);
+    item.querySelector(".room-qty").addEventListener("input", generate);
+    item.querySelector(".room-delete").addEventListener("click", () => {
+      item.remove();
+      updateRoomButton();
+      generate();
+    });
+
+    roomList.appendChild(item);
+    updateRoomButton();
+  }
+
+  function setRoomOption(on) {
+    $("btnAddRoom").disabled = !on;
+    if (on && getRoomCount() === 0) addRoom();
+    if (!on) $("roomList").innerHTML = "";
+    updateRoomButton();
+  }
+
   function collectInput() {
     return {
       customerName: $("customerName").value.trim(),
@@ -200,6 +317,8 @@
       areas: getAreas(),
       qty600: safeNum($("qty600").value),
       qty1200: safeNum($("qty1200").value),
+      optRoom: $("optRoom").checked,
+      rooms: $("optRoom").checked ? getRooms() : [],
     };
   }
 
@@ -216,6 +335,19 @@
 ▫ 총 금액 : ${formatWon(total)}`;
   }
 
+  function roomProductBlock(product, room) {
+    const total = room.qty * product.unitPrice;
+    const priceLabel = product.priceLabel || "행사 기준";
+
+    return `[ ${room.name} - ${product.title} ]
+
+▫ 사이즈 : ${product.size}
+▫ 제품 특징 : ${product.feature}
+▫ ${priceLabel} : 장당 ${formatWon(product.unitPrice)}
+▫ 예상 수량 : ${formatQty(room.qty)}
+▫ 총 금액 : ${formatWon(total)}`;
+  }
+
   function buildEstimate(data) {
     const customerNameLine = data.customerName ? `${data.customerName} 님` : "고객님";
     const qtyByKey = {
@@ -226,6 +358,9 @@
     const productBlocks = PRODUCTS
       .map((product) => productBlock(product, qtyByKey[product.qtyKey]))
       .join("\n\nㅡ\n\n");
+    const roomBlocks = (data.optRoom && data.rooms.length > 0)
+      ? `\n\nㅡ\n\n[ 방 추가 견적 ]\n\n${data.rooms.map((room) => ROOM_PRODUCTS.map((product) => roomProductBlock(product, room)).join("\n\nㅡ\n\n")).join("\n\nㅡ\n\n")}`
+      : "";
 
     return `안녕하세요.
 층간소음매트 전문 시공 브랜드, 대디핏입니다.
@@ -280,7 +415,7 @@
 
 [ 예상 제품 구성 ]
 
-${productBlocks}
+${productBlocks}${roomBlocks}
 
 ━━━━━━━━━━━━━━
 
@@ -341,6 +476,8 @@ ${productBlocks}
     $("areasCustom").value = "";
     $("qty600").value = "";
     $("qty1200").value = "";
+    $("optRoom").checked = false;
+    setRoomOption(false);
     $("output").value = "";
     update600Hint();
     setStatus("초기화 완료", true);
@@ -349,6 +486,15 @@ ${productBlocks}
   $("btnGenerate").addEventListener("click", generate);
   $("btnCopy").addEventListener("click", copyOutput);
   $("btnClear").addEventListener("click", clearAll);
+  $("btnAddRoom").addEventListener("click", () => {
+    addRoom();
+    generate();
+  });
+
+  $("optRoom").addEventListener("change", () => {
+    setRoomOption($("optRoom").checked);
+    generate();
+  });
 
   ["customerName", "phone", "address", "pyeongType", "areasPreset", "areasCustom", "qty600", "qty1200"].forEach((id) => {
     $(id).addEventListener("input", generate);
@@ -356,6 +502,7 @@ ${productBlocks}
   });
 
   update600Hint();
+  updateRoomButton();
   generate();
 </script>
 </body>
