@@ -124,23 +124,23 @@
   const PRODUCTS = [
     {
       title: "대디핏 홈핏 600",
-      size: "60cm × 60cm × 2.2cm",
+      size: "60cm x 60cm x 2.2cm",
       feature: "깔끔한 기본형 TPU 매트",
       qtyKey: "qty600",
-      unitPrice: 0,
+      unitPrice: 24000,
       openPrice: null,
     },
     {
       title: "대디핏 터치핏 600",
-      size: "60cm × 60cm × 2.2cm",
+      size: "60cm x 60cm x 2.2cm",
       feature: "부드러운 터치감과 미끄럼 방지력이 강화된 프리미엄 라인",
       qtyKey: "qty600",
-      unitPrice: 0,
+      unitPrice: 27000,
       openPrice: null,
     },
     {
       title: "대디핏 홈핏 1200",
-      size: "120cm × 120cm × 2.4cm",
+      size: "120cm x 120cm x 2.4cm",
       feature: "이음선이 적은 특대형 1200 사이즈",
       qtyKey: "qty1200",
       unitPrice: 0,
@@ -148,7 +148,7 @@
     },
     {
       title: "대디핏 터치핏 1200",
-      size: "120cm × 120cm × 2.4cm",
+      size: "120cm x 120cm x 2.4cm",
       feature: "특대형 사이즈에 부드러운 표면감과 논슬립 기능을 더한 프리미엄 라인",
       qtyKey: "qty1200",
       unitPrice: 0,
@@ -209,13 +209,13 @@
       ? ""
       : `\n오픈 특가 적용 시 : ${formatWon(qty * product.openPrice)}`;
 
-    return `■ ${product.title}
+    return `[ ${product.title} ]
 
-사이즈 : ${product.size}
-제품 특징 : ${product.feature}
-행사 기준 : 장당 ${formatWon(product.unitPrice)}
-예상 수량 : ${formatQty(qty)}
-예상 금액 : ${formatWon(total)}${openPriceLine}`;
+▫ 사이즈 : ${product.size}
+▫ 제품 특징 : ${product.feature}
+▫ 행사 기준 : 장당 ${formatWon(product.unitPrice)}
+▫ 예상 수량 : ${formatQty(qty)}
+▫ 총 금액 : ${formatWon(total)}${openPriceLine}`;
   }
 
   function buildEstimate(data) {
