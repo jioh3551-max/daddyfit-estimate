@@ -107,6 +107,14 @@
           <input id="pyeongType" placeholder="예: 33평 A타입" />
         </div>
         <div>
+          <label>확장여부</label>
+          <select id="extension">
+            <option value="베란다 확장">베란다 확장</option>
+            <option value="베란다 비확장">베란다 비확장</option>
+            <option value="">표시 안 함</option>
+          </select>
+        </div>
+        <div>
           <label>시공 희망 공간</label>
           <select id="areasPreset">
             <option value="">선택하세요</option>
@@ -245,6 +253,14 @@
     return preset;
   }
 
+  function getPyeongLine() {
+    const pyeongType = $("pyeongType").value.trim();
+    const extension = $("extension").value;
+    if (pyeongType && extension) return `${pyeongType} (${extension})`;
+    if (pyeongType) return pyeongType;
+    return "";
+  }
+
   function getRoomCount() {
     return document.querySelectorAll(".room-item").length;
   }
@@ -313,7 +329,7 @@
       customerName: $("customerName").value.trim(),
       phone: $("phone").value.trim() || "카카오톡 채널 문의",
       address: $("address").value.trim(),
-      pyeongType: $("pyeongType").value.trim(),
+      pyeongLine: getPyeongLine(),
       areas: getAreas(),
       qty600: safeNum($("qty600").value),
       qty1200: safeNum($("qty1200").value),
@@ -378,7 +394,7 @@
 성함 : ${customerNameLine}
 연락처 : ${data.phone}
 시공 주소 : ${data.address}
-평형 / 타입 : ${data.pyeongType}
+평형 / 타입 : ${data.pyeongLine}
 시공 희망 공간 : ${data.areas}
 
 ━━━━━━━━━━━━━━
@@ -472,6 +488,7 @@ ${productBlocks}${roomBlocks}
     $("phone").value = "";
     $("address").value = "";
     $("pyeongType").value = "";
+    $("extension").value = "베란다 확장";
     $("areasPreset").value = "";
     $("areasCustom").value = "";
     $("qty600").value = "";
@@ -496,7 +513,7 @@ ${productBlocks}${roomBlocks}
     generate();
   });
 
-  ["customerName", "phone", "address", "pyeongType", "areasPreset", "areasCustom", "qty600", "qty1200"].forEach((id) => {
+  ["customerName", "phone", "address", "pyeongType", "extension", "areasPreset", "areasCustom", "qty600", "qty1200"].forEach((id) => {
     $(id).addEventListener("input", generate);
     $(id).addEventListener("change", generate);
   });
