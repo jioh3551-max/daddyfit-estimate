@@ -64,6 +64,12 @@
     .option-row .field{ flex:1; min-width: 220px; }
     .option-row .field label{ margin:0 0 4px; font-size:12px; color:#555; }
     .option-row .field .sub{ font-size:12px; color:#999; margin-top:4px; }
+    .memo-option { align-items:flex-start; }
+    .editor-stack .memo-option textarea {
+      min-height:76px;
+      resize:vertical;
+      line-height:1.55;
+    }
 
     .room-tools { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:8px; }
     .room-list { display:grid; gap:8px; }
@@ -374,8 +380,15 @@
       font-size:12px;
       line-height:1.55;
     }
-    .df-memo { height:80px; padding:14px 20px; }
+    .df-memo { min-height:80px; padding:14px 20px; }
     .df-memo-line { height:27px; border-bottom:1px dashed #aeb7c0; }
+    .df-memo-text {
+      font-size:13px;
+      line-height:1.65;
+      color:#263645;
+      white-space:normal;
+      overflow-wrap:anywhere;
+    }
     .df-footer {
       min-height:118px;
       margin-top:16px;
@@ -529,6 +542,17 @@
             <div class="sub" id="roomsHint">체크 시 방 이름과 600 장수를 여러 개 추가할 수 있습니다.</div>
           </div>
           <div id="roomList" class="room-list"></div>
+        </div>
+      </div>
+
+      <div class="option-row memo-option">
+        <label class="check">
+          <input id="optMemo" type="checkbox" />
+          메모 추가
+        </label>
+        <div class="field" id="memoInputWrap" hidden>
+          <label for="memoText">메모 내용</label>
+          <textarea id="memoText" placeholder="견적서에 표시할 내용을 입력하세요."></textarea>
         </div>
       </div>
 
@@ -731,6 +755,10 @@
     updateRoomButton();
   }
 
+  function setMemoOption(on) {
+    $("memoInputWrap").hidden = !on;
+  }
+
   function collectInput() {
     return {
       customerName: $("customerName").value.trim(),
@@ -742,6 +770,8 @@
       qty1200: safeNum($("qty1200").value),
       optRoom: $("optRoom").checked,
       rooms: $("optRoom").checked ? getRooms() : [],
+      optMemo: $("optMemo").checked,
+      memoText: $("optMemo").checked ? $("memoText").value.trim() : "",
       planImageUrl: uploadedImageUrl,
       planScale: safeNum($("planScale").value) || 100,
     };
@@ -837,6 +867,15 @@
     const roomSectionNo = productSectionNo + 1;
     const noticeSectionNo = productSectionNo + (hasRooms ? 2 : 1);
     const memoSectionNo = noticeSectionNo + 1;
+    const memoSection = data.optMemo ? `
+      <section class="df-section">
+        <h3 class="df-section-title">${memoSectionNo}. 메모</h3>
+        <div class="df-box df-memo">
+          ${data.memoText
+            ? `<div class="df-memo-text">${esc(data.memoText).replace(/\n/g, "<br>")}</div>`
+            : `<div class="df-memo-line"></div><div class="df-memo-line"></div>`}
+        </div>
+      </section>` : "";
 
     $("quoteSheet").innerHTML = `
       <header class="df-header">
@@ -900,10 +939,7 @@
             </div>
           </div>
         </section>
-        <section class="df-section">
-          <h3 class="df-section-title">${memoSectionNo}. 메모</h3>
-          <div class="df-box df-memo"><div class="df-memo-line"></div><div class="df-memo-line"></div></div>
-        </section>
+        ${memoSection}
       </div>
       <footer class="df-footer">
         <div class="df-footer-main">
@@ -957,6 +993,9 @@
       .join("\n\nㅡ\n\n");
     const roomBlocks = (data.optRoom && data.rooms.length > 0)
       ? `\n\nㅡ\n\n[ 방 추가 견적 ]\n\n${data.rooms.map((room) => ROOM_PRODUCTS.map((product) => roomProductBlock(product, room)).join("\n\nㅡ\n\n")).join("\n\nㅡ\n\n")}`
+      : "";
+    const memoBlock = data.optMemo && data.memoText
+      ? `\n\n━━━━━━━━━━━━━━\n\n[ 메모 ]\n\n${data.memoText}`
       : "";
 
     return `안녕하세요.
@@ -1025,6 +1064,7 @@ ${productBlocks}${roomBlocks}
 스킨 베이지
 
 ※ 실제 색상은 조명, 바닥재 색상, 촬영 환경에 따라 차이가 있을 수 있습니다.
+${memoBlock}
 
 ━━━━━━━━━━━━━━
 
@@ -1271,6 +1311,9 @@ ${productBlocks}${roomBlocks}
     $("qty1200").value = "";
     $("optRoom").checked = false;
     setRoomOption(false);
+    $("optMemo").checked = false;
+    $("memoText").value = "";
+    setMemoOption(false);
     $("planImage").value = "";
     $("planScale").value = "100";
     $("planScaleValue").textContent = "100%";
@@ -1297,6 +1340,11 @@ ${productBlocks}${roomBlocks}
     setRoomOption($("optRoom").checked);
     generate();
   });
+  $("optMemo").addEventListener("change", () => {
+    setMemoOption($("optMemo").checked);
+    generate();
+  });
+  $("memoText").addEventListener("input", generate);
 
   $("planImage").addEventListener("change", (event) => handlePlanImage(event.target.files[0]));
   $("btnClearImage").addEventListener("click", () => {
@@ -1314,6 +1362,7 @@ ${productBlocks}${roomBlocks}
 
   update600Hint();
   updateRoomButton();
+  setMemoOption(false);
   generate();
 </script>
 </body>
