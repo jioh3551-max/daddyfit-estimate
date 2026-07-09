@@ -80,10 +80,360 @@
     .action-row button{ min-width: 96px; }
 
     select { min-height: 40px; }
+
+    :root {
+      --navy:#062844;
+      --navy-2:#0b3b5f;
+      --gold:#a96d32;
+      --line:#d8e1e9;
+      --ink:#111827;
+      --muted:#71839a;
+    }
+    body { background:#edf4f7; color:var(--ink); }
+    .wrap {
+      max-width:1840px;
+      padding:22px 28px;
+      display:grid;
+      grid-template-columns:520px minmax(0, 1fr);
+      gap:28px;
+      align-items:start;
+    }
+    .editor-stack {
+      min-width:0;
+      position:sticky;
+      top:16px;
+      padding:18px;
+      border:1px solid #dbe5ee;
+      border-radius:8px;
+      background:#fff;
+      box-shadow:0 14px 36px rgba(15,23,42,.08);
+    }
+    .editor-stack .card {
+      padding:0 0 15px;
+      margin:0 0 15px;
+      border-bottom:1px solid #e2e8f0;
+      border-radius:0;
+      box-shadow:none;
+    }
+    .editor-stack .card:last-child { margin-bottom:0; border-bottom:0; }
+    .editor-stack h1 { font-size:22px; color:#0f172a; }
+    .editor-stack h2 { font-size:15px; color:#0f172a; }
+    .editor-stack textarea { min-height:230px; }
+    .editor-stack button { border-radius:6px; font-weight:800; }
+    .editor-stack .action-row { gap:8px; }
+    .editor-stack .action-row button { min-width:0; padding:10px 12px; }
+    .preview-stack { min-width:0; position:sticky; top:16px; }
+    .preview-toolbar {
+      min-height:54px;
+      padding:0 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      border:1px solid #dbe5ee;
+      border-bottom:0;
+      background:#fff;
+      color:#0f172a;
+      font-size:14px;
+      font-weight:900;
+    }
+    .preview-toolbar .row { gap:8px; }
+    .preview-toolbar button { padding:9px 12px; border-radius:6px; font-weight:800; }
+    .quote-wrap {
+      padding:18px;
+      border:1px solid #dbe5ee;
+      background:#e7eef5;
+      overflow:hidden;
+    }
+    .quote-scale {
+      width:1024px;
+      transform:scale(var(--preview-scale, 1));
+      transform-origin:top left;
+    }
+    .quote-sheet {
+      width:1024px;
+      overflow:hidden;
+      background:#fff;
+      color:#111827;
+      font-family:"Pretendard","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    }
+    .df-header {
+      height:235px;
+      padding:24px 34px 0;
+      color:#fff;
+      background:linear-gradient(120deg,#031b30,#073a61 68%,#03192b);
+      box-sizing:border-box;
+    }
+    .df-header-main {
+      display:grid;
+      grid-template-columns:440px 1fr;
+      align-items:center;
+      gap:26px;
+    }
+    .df-brand {
+      display:grid;
+      grid-template-columns:250px 1fr;
+      align-items:center;
+      gap:14px;
+    }
+    .df-brand-logo-wrap {
+      position:relative;
+      width:250px;
+      height:128px;
+      overflow:hidden;
+    }
+    .df-brand-logo {
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:250px;
+      max-width:none;
+      height:auto;
+      transform:translate(-50%,-50%);
+      object-fit:contain;
+    }
+    .df-brand-copy {
+      margin:0;
+      font-size:16px;
+      line-height:1.75;
+      color:#eef6fc;
+    }
+    .df-title {
+      min-height:116px;
+      padding-left:34px;
+      border-left:1px solid rgba(202,157,103,.75);
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+    }
+    .df-title h2 {
+      margin:0;
+      padding-bottom:7px;
+      color:#fff;
+      font-size:48px;
+      line-height:1.15;
+      letter-spacing:.03em;
+      font-weight:900;
+      text-shadow:0 1px 2px rgba(0,0,0,.18);
+    }
+    .df-title p {
+      margin:12px 0 0;
+      color:#f5c58f;
+      font-size:17px;
+      line-height:1.6;
+      font-weight:700;
+    }
+    .df-benefits {
+      width:520px;
+      min-height:72px;
+      margin:8px 0 0 auto;
+      padding:10px 14px;
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:0;
+      border:1px solid #d7b184;
+      border-radius:10px 10px 0 0;
+      background:#fff;
+      color:#2e3136;
+      box-sizing:border-box;
+    }
+    .df-benefit {
+      padding:0 9px;
+      display:flex;
+      align-items:center;
+      gap:7px;
+      border-right:1px solid #ead6bd;
+      font-size:10px;
+      line-height:1.45;
+      font-weight:700;
+    }
+    .df-benefit:last-child { border-right:0; }
+    .df-benefit svg { width:30px; height:30px; flex:none; color:#9c612b; }
+    .df-body { padding:16px 34px 0; }
+    .df-section { margin-top:16px; }
+    .df-section:first-child { margin-top:0; }
+    .df-section-title {
+      display:inline-flex;
+      align-items:center;
+      min-width:178px;
+      height:40px;
+      margin:0;
+      padding:0 22px;
+      position:relative;
+      z-index:2;
+      background:var(--navy);
+      color:#fff;
+      font-size:20px;
+      font-weight:900;
+      box-sizing:border-box;
+      clip-path:polygon(0 0,88% 0,100% 100%,0 100%);
+    }
+    .df-box {
+      margin-top:-1px;
+      border:1.5px solid var(--navy);
+      border-radius:0 7px 7px 7px;
+      background:#fff;
+    }
+    .df-info-grid {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      padding:10px 20px;
+    }
+    .df-info-item {
+      min-height:52px;
+      padding:10px 12px;
+      display:grid;
+      grid-template-columns:28px 118px 1fr;
+      gap:8px;
+      align-items:center;
+      border-bottom:1px solid #decfc1;
+      box-sizing:border-box;
+    }
+    .df-info-item:nth-child(odd) { border-right:1px solid #decfc1; }
+    .df-info-item:nth-last-child(-n+2) { border-bottom:0; }
+    .df-check { font-size:20px; color:var(--navy); font-weight:900; }
+    .df-info-label { font-weight:900; color:#14253b; }
+    .df-info-value { font-size:15px; line-height:1.5; color:#20242a; word-break:keep-all; }
+    .df-plan-layout {
+      min-height:290px;
+      padding:16px 18px;
+      display:grid;
+      grid-template-columns:165px 1fr 185px;
+      gap:18px;
+      align-items:stretch;
+    }
+    .df-plan-legend {
+      padding:14px 8px;
+      color:#263645;
+      font-size:13px;
+      line-height:1.7;
+    }
+    .df-legend-row { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+    .df-swatch { width:38px; height:24px; border:1px solid #999; background:#f4ead9; }
+    .df-swatch.excluded { background:repeating-linear-gradient(135deg,#fff 0 5px,#d8d8d8 6px 7px); }
+    .df-plan-note { margin-top:26px; line-height:1.7; }
+    .df-plan-frame {
+      min-height:250px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      border:1px solid #b8c4cf;
+      background:#fff;
+    }
+    .df-plan-frame img {
+      width:100%;
+      height:260px;
+      display:block;
+      object-fit:contain;
+      transform-origin:center;
+    }
+    .df-onsite {
+      padding:14px 14px 10px;
+      border:1px solid var(--navy);
+      border-radius:7px;
+      background:#fff;
+    }
+    .df-onsite h4 {
+      margin:-14px -14px 12px;
+      padding:11px 12px;
+      border-radius:6px 6px 0 0;
+      background:var(--navy);
+      color:#fff;
+      text-align:center;
+      font-size:14px;
+    }
+    .df-onsite-row { padding:7px 0; font-size:13px; }
+    .df-onsite-lines { margin-top:12px; border-top:1px dashed #9ba7b2; height:34px; border-bottom:1px dashed #9ba7b2; }
+    .df-table {
+      width:100%;
+      border-collapse:collapse;
+      table-layout:fixed;
+      font-size:13px;
+    }
+    .df-table th,.df-table td {
+      padding:10px 8px;
+      border:1px solid #7e8d9a;
+      text-align:center;
+      line-height:1.4;
+    }
+    .df-table th { background:#f8f4ee; color:#172332; font-weight:900; }
+    .df-table td { color:#20242a; }
+    .df-table td strong { color:#071f35; font-weight:900; }
+    .df-table-note { margin:8px 18px 10px; font-size:11px; color:#4b5563; }
+    .df-room-table { margin-top:10px; }
+    .df-notice-grid {
+      padding:15px 20px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:0 28px;
+    }
+    .df-notice-column + .df-notice-column { border-left:1px solid #d9b994; padding-left:28px; }
+    .df-notice-item {
+      margin:0 0 10px;
+      display:grid;
+      grid-template-columns:18px 1fr;
+      gap:5px;
+      font-size:12px;
+      line-height:1.55;
+    }
+    .df-memo { height:80px; padding:14px 20px; }
+    .df-memo-line { height:27px; border-bottom:1px dashed #aeb7c0; }
+    .df-footer {
+      min-height:118px;
+      margin-top:16px;
+      padding:12px 34px 10px;
+      box-sizing:border-box;
+      background:var(--navy);
+      color:#fff;
+      font-size:13px;
+    }
+    .df-footer-main {
+      display:grid;
+      grid-template-columns:1fr 1fr 1.35fr;
+      gap:0;
+      align-items:center;
+    }
+    .df-footer-item {
+      min-height:44px;
+      padding:0 22px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      border-right:1px solid rgba(221,174,119,.7);
+    }
+    .df-footer-item:last-child { border-right:0; }
+    .df-footer-item svg { width:34px; height:34px; flex:none; }
+    .df-footer-business {
+      margin-top:9px;
+      padding-top:8px;
+      border-top:1px solid rgba(255,255,255,.24);
+      color:rgba(255,255,255,.82);
+      font-size:9.5px;
+      line-height:1.55;
+      text-align:center;
+      letter-spacing:0;
+    }
+    .plan-control {
+      margin-top:10px;
+      padding:10px;
+      border:1px solid #e2e8f0;
+      border-radius:7px;
+      background:#fbfdff;
+    }
+    .plan-control-head { display:flex; justify-content:space-between; margin-bottom:6px; color:#71839a; font-size:12px; font-weight:800; }
+    #planScale { padding:0; accent-color:var(--navy); }
+    @media (max-width:1000px) {
+      .wrap { display:block; padding:12px; }
+      .editor-stack,.preview-stack { position:static; }
+      .editor-stack { margin-bottom:14px; }
+      .quote-wrap { padding:10px; }
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
+    <div class="editor-stack">
     <div class="card">
       <h1>대디핏 견적 템플릿</h1>
       <div class="mini muted">
@@ -169,19 +519,57 @@
       </div>
 
       <div class="action-row">
-        <button id="btnGenerate">견적 생성</button>
+        <button id="btnGenerate" type="button">견적 생성</button>
         <button class="secondary" id="btnCopy">복사</button>
+        <button class="secondary" id="btnCopyImage" type="button">이미지 복사</button>
+        <button class="secondary" id="btnDownloadImage" type="button">PNG 저장</button>
         <button class="secondary" id="btnClear">초기화</button>
         <span id="status" class="mini"></span>
       </div>
     </div>
 
     <div class="card">
+      <h2>시공 범위 도면</h2>
+      <div>
+        <label for="planImage">이미지 업로드</label>
+        <input id="planImage" type="file" accept="image/*" />
+      </div>
+      <div class="plan-control">
+        <div class="plan-control-head">
+          <span>도면 크기</span>
+          <output id="planScaleValue" for="planScale">100%</output>
+        </div>
+        <input id="planScale" type="range" min="60" max="200" step="5" value="100" />
+      </div>
+      <div class="action-row">
+        <button class="secondary" id="btnClearImage" type="button">이미지 제거</button>
+      </div>
+      <div class="hint">이미지를 넣지 않으면 견적서에서 시공 범위 확인 영역이 보이지 않습니다.</div>
+    </div>
+
+    <div class="card">
       <h2>출력(카톡용)</h2>
       <textarea id="output" readonly placeholder="견적 생성 버튼을 누르면 여기에 문구가 생성됩니다."></textarea>
     </div>
+    </div>
+
+    <div class="preview-stack">
+      <div class="preview-toolbar">
+        <span>대디핏 견적서 이미지</span>
+        <div class="row">
+          <button id="previewCopyImage" type="button">이미지 복사</button>
+          <button id="previewDownloadImage" class="secondary" type="button">PNG 저장</button>
+        </div>
+      </div>
+      <div class="quote-wrap">
+        <div class="quote-scale" id="quoteScale">
+          <article class="quote-sheet" id="quoteSheet"></article>
+        </div>
+      </div>
+    </div>
   </div>
 
+<script src="./html2canvas.min.js"></script>
 <script>
   const PRODUCTS = [
     {
@@ -220,6 +608,7 @@
 
   const ROOM_PRODUCTS = PRODUCTS.filter((product) => product.qtyKey === "qty600");
   const MAX_ROOMS = 4;
+  let uploadedImageUrl = "";
 
   const $ = (id) => document.getElementById(id);
 
@@ -338,7 +727,186 @@
       qty1200: safeNum($("qty1200").value),
       optRoom: $("optRoom").checked,
       rooms: $("optRoom").checked ? getRooms() : [],
+      planImageUrl: uploadedImageUrl,
+      planScale: safeNum($("planScale").value) || 100,
     };
+  }
+
+  function esc(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function todayDotText() {
+    const date = new Date();
+    return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, "0")}.${String(date.getDate()).padStart(2, "0")}`;
+  }
+
+  function daddyIcon(type) {
+    const common = `viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"`;
+    const paths = {
+      home: `<path d="m3 11 9-7 9 7"/><path d="M6 10v10h12V10"/><path d="M9 20v-6h6v6"/>`,
+      clipboard: `<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2h6v2"/><path d="m8.5 13 2 2 5-5"/>`,
+      helmet: `<path d="M5 14a7 7 0 0 1 14 0"/><path d="M4 14h16v3H4z"/><path d="M9 7v7m6-7v7"/>`,
+      shield: `<path d="M12 3 20 6v5c0 5-3.2 8.2-8 10-4.8-1.8-8-5-8-10V6l8-3Z"/><path d="m9 12 2 2 4-4"/>`,
+      coin: `<circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/>`,
+      truck: `<path d="M3 6h11v9H3z"/><path d="M14 9h4l3 3v3h-7"/><circle cx="7" cy="17" r="2"/><circle cx="18" cy="17" r="2"/>`,
+      chat: `<path d="M21 11a8 8 0 0 1-8 8H8l-5 2 2-4a8 8 0 1 1 16-6Z"/><path d="M8 11h.01M12 11h.01M16 11h.01"/>`,
+      phone: `<path d="M7 4 9.5 8.5c.3.5.2 1-.2 1.4l-1 1c1.2 2.2 3 4 5.2 5.2l1-1c.4-.4.9-.5 1.4-.2L20 17c.7.4 1 1.2.6 1.9-.7 1.5-2 2.2-3.4 1.8C9.7 18.5 5.5 14.3 3.3 6.8 2.9 5.4 3.6 4 5.1 3.4 5.8 3.1 6.6 3.4 7 4Z"/>`,
+      people: `<circle cx="8" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M2.5 20c.7-4 2.8-6 5.5-6s4.8 2 5.5 6"/><path d="M14 15c3.8-1.8 6.5.4 7 4"/>`
+    };
+    return `<svg ${common}>${paths[type] || paths.home}</svg>`;
+  }
+
+  function renderProductRows(data) {
+    const qtyByKey = { qty600: data.qty600, qty1200: data.qty1200 };
+    return PRODUCTS.map((product) => {
+      const qty = qtyByKey[product.qtyKey];
+      return `
+        <tr>
+          <td>${esc(product.title.replace(/^대디핏\s*/, ""))}</td>
+          <td>${esc(product.size.replace(/cm/g, "").replace(/x/g, "×"))}cm</td>
+          <td>${esc(product.feature)}</td>
+          <td><strong>${formatWon(product.unitPrice)}</strong></td>
+          <td>${formatQty(qty)}</td>
+          <td><strong>${formatWon(qty * product.unitPrice)}</strong></td>
+        </tr>`;
+    }).join("");
+  }
+
+  function renderRoomRows(data, sectionNo) {
+    if (!data.optRoom || data.rooms.length === 0) return "";
+    const rows = data.rooms.map((room) => `
+      <tr>
+        <td>${esc(room.name)}</td>
+        <td>${formatQty(room.qty)}</td>
+        <td>${formatWon(room.qty * ROOM_PRODUCTS[0].unitPrice)}</td>
+        <td>${formatWon(room.qty * ROOM_PRODUCTS[1].unitPrice)}</td>
+      </tr>`).join("");
+    return `
+      <section class="df-section">
+        <h3 class="df-section-title">${sectionNo}. 방 추가 견적</h3>
+        <div class="df-box">
+          <table class="df-table df-room-table">
+            <thead><tr><th>시공 공간</th><th>예상 수량</th><th>홈핏 600</th><th>터치핏 600</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      </section>`;
+  }
+
+  function renderQuotePreview(data) {
+    const customerName = data.customerName ? `${data.customerName} 님` : "고객님";
+    const hasRooms = data.optRoom && data.rooms.length > 0;
+    const planSection = data.planImageUrl ? `
+      <section class="df-section">
+        <h3 class="df-section-title">2. 시공 범위 확인</h3>
+        <div class="df-box df-plan-layout">
+          <div class="df-plan-legend">
+            <div class="df-legend-row"><span class="df-swatch"></span><span>시공 범위</span></div>
+            <div class="df-legend-row"><span class="df-swatch excluded"></span><span>제외 범위</span></div>
+            <p class="df-plan-note">현장 상황에 따라<br>변경될 수 있습니다.</p>
+          </div>
+          <div class="df-plan-frame"><img src="${esc(data.planImageUrl)}" alt="시공 범위 도면" style="transform:scale(${data.planScale / 100})" /></div>
+          <aside class="df-onsite">
+            <h4>현장 확인 필요 사항</h4>
+            <div class="df-onsite-row">□ 문턱 / 몰딩 높이</div>
+            <div class="df-onsite-row">□ 가구 배치</div>
+            <div class="df-onsite-row">□ 단차 유무</div>
+            <div class="df-onsite-row">□ 걸레받이 형태</div>
+            <div class="df-onsite-row">□ 기타 특이사항</div>
+            <div class="df-onsite-lines"></div>
+          </aside>
+        </div>
+      </section>` : "";
+    const productSectionNo = planSection ? 3 : 2;
+    const roomSectionNo = productSectionNo + 1;
+    const noticeSectionNo = productSectionNo + (hasRooms ? 2 : 1);
+    const memoSectionNo = noticeSectionNo + 1;
+
+    $("quoteSheet").innerHTML = `
+      <header class="df-header">
+        <div class="df-header-main">
+          <div class="df-brand">
+            <div class="df-brand-logo-wrap">
+              <img class="df-brand-logo" src="./assets/daddyfit-logo-white.png" alt="DADDYFIT">
+            </div>
+            <p class="df-brand-copy">아빠의 마음으로, 우리<br>가족의 안전한 공간을 만듭니다.</p>
+          </div>
+          <div class="df-title">
+            <h2>견적서</h2>
+            <p>DADDYFIT이 꼼꼼하게 체크하고<br>안전하게 시공해드립니다.</p>
+          </div>
+        </div>
+        <div class="df-benefits">
+          <div class="df-benefit">${daddyIcon("helmet")}<span>전문 시공팀<br>무료 시공</span></div>
+          <div class="df-benefit">${daddyIcon("shield")}<span>1년 무상 A/S<br>시공일로부터 1년</span></div>
+          <div class="df-benefit">${daddyIcon("coin")}<span>계약금 0원<br>당일 결제</span></div>
+          <div class="df-benefit">${daddyIcon("truck")}<span>출장비 안내<br>부분시공 10만원</span></div>
+        </div>
+      </header>
+      <div class="df-body">
+        <section class="df-section">
+          <h3 class="df-section-title">1. 고객 정보</h3>
+          <div class="df-box df-info-grid">
+            <div class="df-info-item"><span class="df-check">☑</span><span class="df-info-label">고객명</span><span class="df-info-value">${esc(customerName)}</span></div>
+            <div class="df-info-item"><span class="df-check">☑</span><span class="df-info-label">평형 / 타입</span><span class="df-info-value">${esc(data.pyeongLine || "-")}</span></div>
+            <div class="df-info-item"><span class="df-check">☑</span><span class="df-info-label">연락처</span><span class="df-info-value">${esc(data.phone)}</span></div>
+            <div class="df-info-item"><span class="df-check">☑</span><span class="df-info-label">시공 희망 공간</span><span class="df-info-value">${esc(data.areas || "-")}</span></div>
+            <div class="df-info-item"><span class="df-check">☑</span><span class="df-info-label">주소</span><span class="df-info-value">${esc(data.address || "-")}</span></div>
+            <div class="df-info-item"><span class="df-check">☑</span><span class="df-info-label">견적일</span><span class="df-info-value">${todayDotText()}</span></div>
+          </div>
+        </section>
+        ${planSection}
+        <section class="df-section">
+          <h3 class="df-section-title">${productSectionNo}. 제품 및 견적</h3>
+          <div class="df-box">
+            <table class="df-table">
+              <thead><tr><th>제품명</th><th>사이즈</th><th>특징</th><th>행사 기준가(장당)</th><th>예상 수량</th><th>예상 금액</th></tr></thead>
+              <tbody>${renderProductRows(data)}</tbody>
+            </table>
+            <p class="df-table-note">※ 실제 사용 수량은 현장 측정 후 변경될 수 있으며, 시공 완료 후 사용된 수량 기준으로 최종 결제됩니다.</p>
+          </div>
+        </section>
+        ${renderRoomRows(data, roomSectionNo)}
+        <section class="df-section">
+          <h3 class="df-section-title">${noticeSectionNo}. 안내 사항</h3>
+          <div class="df-box df-notice-grid">
+            <div class="df-notice-column">
+              <p class="df-notice-item"><b>✓</b><span>안내 수량은 아파트 도면, 평형, 기존 시공 데이터를 기준으로 산출한 예상 수량입니다.</span></p>
+              <p class="df-notice-item"><b>✓</b><span>실제 사용 수량은 현장 구조, 벽면 형태, 몰딩, 문턱, 가구 배치 등에 따라 달라질 수 있습니다.</span></p>
+              <p class="df-notice-item"><b>✓</b><span>계약금은 없으며, 스케줄 배정 후 시공 당일 결제가 진행됩니다.</span></p>
+              <p class="df-notice-item"><b>✓</b><span>팬트리, 알파룸, 아이방 등 추가 공간은 상담 시 함께 안내드립니다.</span></p>
+            </div>
+            <div class="df-notice-column">
+              <p class="df-notice-item"><b>✓</b><span>카드 결제 시 수수료 10%가 부가됩니다.</span></p>
+              <p class="df-notice-item"><b>✓</b><span>전문 시공 서비스는 무료로 제공됩니다. 부분시공 시 출장비 10만원이 발생됩니다.</span></p>
+              <p class="df-notice-item"><b>✓</b><span>이벤트 혜택은 예약일 기준으로 적용됩니다.</span></p>
+              <p class="df-notice-item"><b>✓</b><span>100가구 한정 오픈 기념 특가 이벤트가 적용됩니다.</span></p>
+            </div>
+          </div>
+        </section>
+        <section class="df-section">
+          <h3 class="df-section-title">${memoSectionNo}. 메모</h3>
+          <div class="df-box df-memo"><div class="df-memo-line"></div><div class="df-memo-line"></div></div>
+        </section>
+      </div>
+      <footer class="df-footer">
+        <div class="df-footer-main">
+          <div class="df-footer-item">${daddyIcon("chat")}<span>카카오톡 상담<br>대디핏</span></div>
+          <div class="df-footer-item">${daddyIcon("phone")}<span>대표전화<br>070-8018-8297</span></div>
+          <div class="df-footer-item">${daddyIcon("people")}<span>아빠의 마음으로 시공하는 대디핏<br>특대형 1200 사이즈 층간소음매트 시공 전문</span></div>
+        </div>
+        <div class="df-footer-business">
+          상호: 로하움 &nbsp;|&nbsp; 사업자등록번호: 631-21-02388 &nbsp;|&nbsp; 주소: 울산광역시 북구 배곡로 15, 4층(신천동)<br>
+          대표자 이메일: k-tent@naver.com &nbsp;|&nbsp; COPYRIGHT © 로하움. All rights reserved.
+        </div>
+      </footer>`;
+    queuePreviewScale();
   }
 
   function productBlock(product, qty) {
@@ -464,8 +1032,121 @@ ${productBlocks}${roomBlocks}
     else hint.textContent = "예상 600장수(1200×4): -";
   }
 
+  function updatePreviewScale() {
+    const sheet = $("quoteSheet");
+    const scaleEl = $("quoteScale");
+    const wrap = sheet?.closest(".quote-wrap");
+    if (!sheet || !scaleEl || !wrap) return;
+    const style = getComputedStyle(wrap);
+    const available = Math.max(320, wrap.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight));
+    const scale = Math.min(1, available / 1024);
+    scaleEl.style.setProperty("--preview-scale", String(scale));
+    wrap.style.height = `${Math.ceil(sheet.offsetHeight * scale + parseFloat(style.paddingTop) + parseFloat(style.paddingBottom))}px`;
+  }
+
+  function queuePreviewScale() {
+    requestAnimationFrame(() => {
+      updatePreviewScale();
+      $("quoteSheet")?.querySelectorAll("img").forEach((img) => {
+        if (!img.complete) img.addEventListener("load", updatePreviewScale, { once:true });
+      });
+      requestAnimationFrame(updatePreviewScale);
+    });
+  }
+
+  function handlePlanImage(file) {
+    if (uploadedImageUrl) URL.revokeObjectURL(uploadedImageUrl);
+    uploadedImageUrl = file ? URL.createObjectURL(file) : "";
+    renderQuotePreview(collectInput());
+  }
+
+  function updatePlanScale() {
+    const value = Number($("planScale").value) || 100;
+    $("planScaleValue").textContent = `${value}%`;
+    renderQuotePreview(collectInput());
+  }
+
+  async function captureQuoteCanvas() {
+    if (!window.html2canvas) throw new Error("이미지 변환 도구를 불러오지 못했습니다.");
+    if (document.fonts?.ready) await document.fonts.ready;
+    const sheet = $("quoteSheet");
+    const scaleEl = $("quoteScale");
+    const wrap = sheet.closest(".quote-wrap");
+    const previousScale = scaleEl.style.getPropertyValue("--preview-scale");
+    const previousHeight = wrap.style.height;
+    scaleEl.style.setProperty("--preview-scale", "1");
+    wrap.style.height = "auto";
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+    try {
+      return await html2canvas(sheet, {
+        backgroundColor:"#ffffff",
+        scale:Math.min(3, Math.max(2, window.devicePixelRatio || 2)),
+        useCORS:true,
+        logging:false
+      });
+    } finally {
+      if (previousScale) scaleEl.style.setProperty("--preview-scale", previousScale);
+      else scaleEl.style.removeProperty("--preview-scale");
+      wrap.style.height = previousHeight;
+      queuePreviewScale();
+    }
+  }
+
+  function canvasToBlob(canvas) {
+    return new Promise((resolve) => canvas.toBlob(resolve, "image/png", 1));
+  }
+
+  function quoteFileName() {
+    const customer = $("customerName").value.trim().replace(/[\\/:*?"<>|]/g, "") || "고객";
+    return `daddyfit-estimate-${customer}.png`;
+  }
+
+  function downloadBlob(blob, name) {
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = name;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  async function copyQuoteImage() {
+    try {
+      generate();
+      const blob = await canvasToBlob(await captureQuoteCanvas());
+      if (!blob) throw new Error("PNG 생성 실패");
+      if (navigator.clipboard && window.ClipboardItem) {
+        await navigator.clipboard.write([new ClipboardItem({ "image/png":blob })]);
+        setStatus("이미지 복사 완료", true);
+      } else {
+        downloadBlob(blob, quoteFileName());
+        setStatus("PNG로 저장했습니다.", true);
+      }
+    } catch (error) {
+      console.error(error);
+      setStatus("이미지 복사 실패", false);
+    }
+  }
+
+  async function downloadQuoteImage() {
+    try {
+      generate();
+      const blob = await canvasToBlob(await captureQuoteCanvas());
+      if (!blob) throw new Error("PNG 생성 실패");
+      downloadBlob(blob, quoteFileName());
+      setStatus("PNG 저장 완료", true);
+    } catch (error) {
+      console.error(error);
+      setStatus("PNG 저장 실패", false);
+    }
+  }
+
   function generate() {
-    $("output").value = buildEstimate(collectInput());
+    const data = collectInput();
+    $("output").value = buildEstimate(data);
+    renderQuotePreview(data);
     update600Hint();
     setStatus("생성 완료", true);
   }
@@ -498,6 +1179,10 @@ ${productBlocks}${roomBlocks}
     $("qty1200").value = "";
     $("optRoom").checked = false;
     setRoomOption(false);
+    $("planImage").value = "";
+    $("planScale").value = "100";
+    $("planScaleValue").textContent = "100%";
+    handlePlanImage(null);
     $("output").value = "";
     update600Hint();
     setStatus("초기화 완료", true);
@@ -505,6 +1190,10 @@ ${productBlocks}${roomBlocks}
 
   $("btnGenerate").addEventListener("click", generate);
   $("btnCopy").addEventListener("click", copyOutput);
+  $("btnCopyImage").addEventListener("click", copyQuoteImage);
+  $("previewCopyImage").addEventListener("click", copyQuoteImage);
+  $("btnDownloadImage").addEventListener("click", downloadQuoteImage);
+  $("previewDownloadImage").addEventListener("click", downloadQuoteImage);
   $("btnClear").addEventListener("click", clearAll);
   $("btnAddRoom").addEventListener("click", () => {
     addRoom();
@@ -515,6 +1204,15 @@ ${productBlocks}${roomBlocks}
     setRoomOption($("optRoom").checked);
     generate();
   });
+
+  $("planImage").addEventListener("change", (event) => handlePlanImage(event.target.files[0]));
+  $("btnClearImage").addEventListener("click", () => {
+    $("planImage").value = "";
+    handlePlanImage(null);
+    setStatus("이미지를 제거했습니다.", true);
+  });
+  $("planScale").addEventListener("input", updatePlanScale);
+  window.addEventListener("resize", updatePreviewScale);
 
   ["customerName", "phone", "address", "pyeongType", "extension", "areasPreset", "areasCustom", "qty600", "qty1200"].forEach((id) => {
     $(id).addEventListener("input", generate);
