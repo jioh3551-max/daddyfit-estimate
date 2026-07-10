@@ -132,7 +132,15 @@
     .editor-stack button { border-radius:6px; font-weight:800; }
     .editor-stack .action-row { gap:8px; }
     .editor-stack .action-row button { min-width:0; padding:10px 12px; }
-    .preview-stack { min-width:0; position:sticky; top:16px; }
+    .preview-stack {
+      min-width:0;
+      position:sticky;
+      top:16px;
+      max-height:calc(100vh - 32px);
+      overflow:auto;
+      overscroll-behavior:contain;
+      scrollbar-gutter:stable;
+    }
     .mobile-only { display:none; }
     .preview-toolbar {
       min-height:54px;
@@ -443,6 +451,8 @@
       .preview-stack {
         display:none;
         position:static;
+        max-height:none;
+        overflow:visible;
       }
       .preview-stack.mobile-open,
       .preview-stack.capture-active {
@@ -1104,6 +1114,22 @@ ${memoBlock}
     });
   }
 
+  function waitForNextPaint() {
+    return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  }
+
+  async function waitForQuoteReady(root) {
+    if (document.fonts?.ready) await document.fonts.ready;
+    await Promise.all(Array.from(root.querySelectorAll("img")).map((img) => {
+      if (img.complete) return Promise.resolve();
+      return new Promise((resolve) => {
+        img.addEventListener("load", resolve, { once:true });
+        img.addEventListener("error", resolve, { once:true });
+      });
+    }));
+    await waitForNextPaint();
+  }
+
   function handlePlanImage(file) {
     if (uploadedImageUrl) URL.revokeObjectURL(uploadedImageUrl);
     uploadedImageUrl = file ? URL.createObjectURL(file) : "";
@@ -1118,14 +1144,14 @@ ${memoBlock}
 
   async function captureQuoteCanvas() {
     if (!window.html2canvas) throw new Error("이미지 변환 도구를 불러오지 못했습니다.");
-    if (document.fonts?.ready) await document.fonts.ready;
     const source = $("quoteSheet");
+    await waitForQuoteReady(source);
     const host = document.createElement("div");
     const captureSheet = source.cloneNode(true);
     captureSheet.id = "quoteSheetCapture";
     Object.assign(host.style, {
       position:"fixed",
-      left:"0",
+      left:"-12000px",
       top:"0",
       zIndex:"-2147483647",
       width:"1024px",
@@ -1142,13 +1168,7 @@ ${memoBlock}
     });
     host.appendChild(captureSheet);
     document.body.appendChild(host);
-    await Promise.all(Array.from(captureSheet.querySelectorAll("img")).map((img) => {
-      if (img.complete) return Promise.resolve();
-      return new Promise((resolve) => {
-        img.addEventListener("load", resolve, { once:true });
-        img.addEventListener("error", resolve, { once:true });
-      });
-    }));
+    await waitForQuoteReady(captureSheet);
     try {
       const captureHeight = Math.ceil(captureSheet.scrollHeight);
       return await html2canvas(captureSheet, {
