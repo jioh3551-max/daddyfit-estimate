@@ -1142,7 +1142,7 @@ ${memoBlock}
     renderQuotePreview(collectInput());
   }
 
-  async function captureQuoteCanvas() {
+  async function captureQuoteCanvas(captureScale = 2) {
     if (!window.html2canvas) throw new Error("이미지 변환 도구를 불러오지 못했습니다.");
     const source = $("quoteSheet");
     await waitForQuoteReady(source);
@@ -1175,7 +1175,7 @@ ${memoBlock}
       const captureHeight = Math.ceil(captureSheet.scrollHeight);
       const captureOptions = {
         backgroundColor:"#ffffff",
-        scale:2,
+        scale:captureScale,
         width:1024,
         height:captureHeight,
         windowWidth:1200,
@@ -1194,15 +1194,7 @@ ${memoBlock}
           clonedSheet.style.textSizeAdjust = "100%";
         }
       };
-      try {
-        return await html2canvas(captureSheet, captureOptions);
-      } catch (error) {
-        console.warn("High resolution PNG capture failed, retrying at standard scale.", error);
-        return await html2canvas(captureSheet, {
-          ...captureOptions,
-          scale:1
-        });
-      }
+      return await html2canvas(captureSheet, captureOptions);
     } finally {
       host.remove();
     }
@@ -1216,17 +1208,51 @@ ${memoBlock}
     if (isOpen) queuePreviewScale();
   }
 
+  function dataUrlToBlob(dataUrl) {
+    const [meta, content] = dataUrl.split(",");
+    const mime = (meta.match(/data:([^;]+)/) || [])[1] || "image/png";
+    const binary = atob(content);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+    return new Blob([bytes], { type:mime });
+  }
+
   function canvasToBlob(canvas) {
-    return new Promise((resolve) => canvas.toBlob(resolve, "image/png", 1));
+    return new Promise((resolve, reject) => {
+      const fromDataUrl = () => {
+        try {
+          resolve(dataUrlToBlob(canvas.toDataURL("image/png", 1)));
+        } catch (error) {
+          reject(error);
+        }
+      };
+      if (!canvas.toBlob) {
+        fromDataUrl();
+        return;
+      }
+      canvas.toBlob((blob) => {
+        if (blob) resolve(blob);
+        else fromDataUrl();
+      }, "image/png", 1);
+    });
+  }
+
+  async function captureQuoteBlob() {
+    let lastError = null;
+    for (const scale of [2, 1, 0.75]) {
+      try {
+        const canvas = await captureQuoteCanvas(scale);
+        return await canvasToBlob(canvas);
+      } catch (error) {
+        lastError = error;
+        console.warn(`PNG capture failed at scale ${scale}.`, error);
+      }
+    }
+    throw lastError || new Error("PNG 생성 실패");
   }
 
   function quoteBlobPromise() {
-    return captureQuoteCanvas()
-      .then(canvasToBlob)
-      .then((blob) => {
-        if (!blob) throw new Error("PNG 생성 실패");
-        return blob;
-      });
+    return captureQuoteBlob();
   }
 
   function quoteFileName() {
@@ -1243,6 +1269,41 @@ ${memoBlock}
     anchor.click();
     anchor.remove();
     setTimeout(() => URL.revokeObjectURL(url), 60000);
+  }
+
+  function openMobileImageWindow(targetWindow, blob, fileName) {
+    const url = URL.createObjectURL(blob);
+    const title = fileName.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const html = `<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>${title}</title>
+  <style>
+    body{margin:0;padding:18px;background:#edf4f7;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR",sans-serif;color:#0f172a}
+    .bar{position:sticky;top:0;margin:-18px -18px 14px;padding:12px 16px;background:#fff;border-bottom:1px solid #dbe5ee;font-size:14px;line-height:1.5}
+    .bar b{display:block;margin-bottom:3px}
+    a{display:inline-block;margin-top:8px;padding:10px 12px;border-radius:8px;background:#062844;color:#fff;text-decoration:none;font-weight:800}
+    img{display:block;width:100%;max-width:1024px;height:auto;margin:0 auto;background:#fff;box-shadow:0 10px 30px rgba(15,23,42,.12)}
+  </style>
+</head>
+<body>
+  <div class="bar"><b>PNG 이미지가 생성되었습니다.</b>이미지를 길게 눌러 저장하거나 아래 버튼으로 다운로드하세요.<br><a href="${url}" download="${title}">PNG 다운로드</a></div>
+  <img src="${url}" alt="대디핏 견적서">
+</body>
+</html>`;
+    const win = targetWindow && !targetWindow.closed ? targetWindow : window.open("", "_blank");
+    if (!win) {
+      URL.revokeObjectURL(url);
+      return false;
+    }
+    win.document.open();
+    win.document.write(html);
+    win.document.close();
+    win.focus();
+    setTimeout(() => URL.revokeObjectURL(url), 120000);
+    return true;
   }
 
   async function shareImageBlob(blob, fileName) {
@@ -1285,30 +1346,43 @@ ${memoBlock}
       const blob = await blobPromise;
       if (await shareImageBlob(blob, quoteFileName())) {
         setStatus("이미지 공유창을 열었습니다.", true);
+      } else if (isMobileDevice() && openMobileImageWindow(null, blob, quoteFileName())) {
+        setStatus("새 탭에서 이미지를 길게 눌러 저장해주세요.", true);
       } else {
         downloadBlob(blob, quoteFileName());
         setStatus("복사 미지원 브라우저라 PNG로 저장했습니다.", true);
       }
     } catch (error) {
       console.error(error);
-      setStatus("이미지 생성에 실패했습니다.", false);
+      setStatus(`이미지 생성 실패: ${error?.message || "다시 시도해주세요."}`, false);
     }
   }
 
   async function downloadQuoteImage() {
+    const mobileSaveWindow = isMobileDevice() ? window.open("", "_blank") : null;
+    if (mobileSaveWindow) {
+      mobileSaveWindow.document.write("<!doctype html><meta charset=\"utf-8\"><body style=\"font-family:sans-serif;padding:20px\">PNG 이미지를 생성 중입니다...</body>");
+      mobileSaveWindow.document.close();
+    }
     try {
       setStatus("PNG 생성 중...", true);
       generate();
       const blob = await quoteBlobPromise();
       if (isMobileDevice() && await shareImageBlob(blob, quoteFileName())) {
+        if (mobileSaveWindow && !mobileSaveWindow.closed) mobileSaveWindow.close();
         setStatus("공유 메뉴에서 저장 또는 공유를 선택해주세요.", true);
+        return;
+      }
+      if (isMobileDevice() && openMobileImageWindow(mobileSaveWindow, blob, quoteFileName())) {
+        setStatus("새 탭에서 이미지를 길게 눌러 저장해주세요.", true);
         return;
       }
       downloadBlob(blob, quoteFileName());
       setStatus("PNG 저장 완료", true);
     } catch (error) {
+      if (mobileSaveWindow && !mobileSaveWindow.closed) mobileSaveWindow.close();
       console.error(error);
-      setStatus("PNG 저장 실패", false);
+      setStatus(`PNG 저장 실패: ${error?.message || "다시 시도해주세요."}`, false);
     }
   }
 
