@@ -1151,13 +1151,15 @@ ${memoBlock}
     captureSheet.id = "quoteSheetCapture";
     Object.assign(host.style, {
       position:"fixed",
-      left:"-12000px",
+      left:"0",
       top:"0",
-      zIndex:"-2147483647",
+      zIndex:"2147483647",
       width:"1024px",
       background:"#ffffff",
-      pointerEvents:"none"
+      pointerEvents:"none",
+      overflow:"visible"
     });
+    host.setAttribute("aria-hidden", "true");
     Object.assign(captureSheet.style, {
       width:"1024px",
       maxWidth:"none",
@@ -1171,7 +1173,7 @@ ${memoBlock}
     await waitForQuoteReady(captureSheet);
     try {
       const captureHeight = Math.ceil(captureSheet.scrollHeight);
-      return await html2canvas(captureSheet, {
+      const captureOptions = {
         backgroundColor:"#ffffff",
         scale:2,
         width:1024,
@@ -1191,7 +1193,16 @@ ${memoBlock}
           clonedSheet.style.webkitTextSizeAdjust = "100%";
           clonedSheet.style.textSizeAdjust = "100%";
         }
-      });
+      };
+      try {
+        return await html2canvas(captureSheet, captureOptions);
+      } catch (error) {
+        console.warn("High resolution PNG capture failed, retrying at standard scale.", error);
+        return await html2canvas(captureSheet, {
+          ...captureOptions,
+          scale:1
+        });
+      }
     } finally {
       host.remove();
     }
@@ -1252,7 +1263,12 @@ ${memoBlock}
       || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
   }
 
+  function isMobileDevice() {
+    return isAppleMobile() || /Android|Mobile/i.test(navigator.userAgent);
+  }
+
   async function copyQuoteImage() {
+    setStatus("이미지 생성 중...", true);
     generate();
     const blobPromise = quoteBlobPromise();
     try {
@@ -1281,10 +1297,11 @@ ${memoBlock}
 
   async function downloadQuoteImage() {
     try {
+      setStatus("PNG 생성 중...", true);
       generate();
       const blob = await quoteBlobPromise();
-      if (isAppleMobile() && await shareImageBlob(blob, quoteFileName())) {
-        setStatus("공유 메뉴에서 이미지 저장을 선택해주세요.", true);
+      if (isMobileDevice() && await shareImageBlob(blob, quoteFileName())) {
+        setStatus("공유 메뉴에서 저장 또는 공유를 선택해주세요.", true);
         return;
       }
       downloadBlob(blob, quoteFileName());
