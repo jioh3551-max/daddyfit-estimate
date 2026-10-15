@@ -36,6 +36,12 @@
       background:#111; color:#fff; font-size: 14px; cursor:pointer;
     }
     button.secondary { background:#e9ecf1; color:#111; }
+    .quote-mode { display:flex; gap:8px; }
+    .quote-mode button {
+      flex:1; border-radius:6px; background:#e7eef5; color:#111827; font-weight:800;
+    }
+    .quote-mode button[aria-pressed="true"] { background:#111827; color:#fff; }
+    .quote-mode button:focus-visible { outline:3px solid #a96d32; outline-offset:2px; }
 
     .hint { font-size: 12px; color:#666; margin-top: 6px; }
     .mini { font-size: 12px; color:#666; }
@@ -481,6 +487,14 @@
     </div>
 
     <div class="card">
+      <h2 id="quoteModeLabel">견적 모드</h2>
+      <div class="quote-mode" role="group" aria-labelledby="quoteModeLabel">
+        <button id="modeGeneral" type="button" data-quote-mode="general" aria-pressed="true">일반</button>
+        <button id="modeSoomgo" type="button" data-quote-mode="soomgo" aria-pressed="false">숨고</button>
+      </div>
+    </div>
+
+    <div class="card">
       <h2>고객 정보</h2>
       <div class="grid">
         <div>
@@ -625,6 +639,7 @@
   const PRODUCTS = [
     {
       title: "대디핏 홈핏 600",
+      line: "homefit",
       size: "60cm x 60cm x 2.2cm",
       feature: "깔끔한 기본형 TPU 매트",
       qtyKey: "qty600",
@@ -633,6 +648,7 @@
     },
     {
       title: "대디핏 터치핏 600",
+      line: "touchfit",
       size: "60cm x 60cm x 2.2cm",
       feature: "부드러운 터치감과 미끄럼 방지력이 강화된 프리미엄 라인",
       qtyKey: "qty600",
@@ -641,6 +657,7 @@
     },
     {
       title: "홈핏 1200",
+      line: "homefit",
       size: "120cm x 120cm x 2.4cm",
       feature: "이음선이 적은 특대형 1200 사이즈",
       qtyKey: "qty1200",
@@ -649,6 +666,7 @@
     },
     {
       title: "터치핏 1200",
+      line: "touchfit",
       size: "120cm x 120cm x 2.4cm",
       feature: "특대형 사이즈에 부드러운 표면감과 논슬립 기능을 더한 프리미엄 라인",
       qtyKey: "qty1200",
@@ -657,7 +675,23 @@
     },
   ];
 
-  const ROOM_PRODUCTS = PRODUCTS.filter((product) => product.qtyKey === "qty600");
+  let quoteMode = "general";
+
+  function productsForMode(mode) {
+    return mode === "soomgo" ? PRODUCTS.filter((product) => product.line === "touchfit") : PRODUCTS;
+  }
+
+  function roomProductsForMode(mode) {
+    return productsForMode(mode).filter((product) => product.qtyKey === "qty600");
+  }
+
+  function setQuoteMode(mode) {
+    quoteMode = mode === "soomgo" ? "soomgo" : "general";
+    document.querySelectorAll("[data-quote-mode]").forEach((button) => {
+      button.setAttribute("aria-pressed", String(button.dataset.quoteMode === quoteMode));
+    });
+    generate();
+  }
   const MAX_ROOMS = 4;
   let uploadedImageUrl = "";
 
@@ -773,6 +807,7 @@
 
   function collectInput() {
     return {
+      quoteMode,
       customerName: $("customerName").value.trim(),
       phone: $("phone").value.trim() || "카카오톡 채널 문의",
       address: $("address").value.trim(),
@@ -821,7 +856,7 @@
 
   function renderProductRows(data) {
     const qtyByKey = { qty600: data.qty600, qty1200: data.qty1200 };
-    return PRODUCTS.map((product) => {
+    return productsForMode(data.quoteMode).map((product) => {
       const qty = qtyByKey[product.qtyKey];
       return `
         <tr>
@@ -837,19 +872,19 @@
 
   function renderRoomRows(data, sectionNo) {
     if (!data.optRoom || data.rooms.length === 0) return "";
+    const roomProducts = roomProductsForMode(data.quoteMode);
     const rows = data.rooms.map((room) => `
       <tr>
         <td>${esc(room.name)}</td>
         <td>${formatQty(room.qty)}</td>
-        <td>${formatWon(room.qty * ROOM_PRODUCTS[0].unitPrice)}</td>
-        <td>${formatWon(room.qty * ROOM_PRODUCTS[1].unitPrice)}</td>
+        ${roomProducts.map((product) => `<td>${formatWon(room.qty * product.unitPrice)}</td>`).join("")}
       </tr>`).join("");
     return `
       <section class="df-section">
         <h3 class="df-section-title">${sectionNo}. 방 추가 견적</h3>
         <div class="df-box">
           <table class="df-table df-room-table">
-            <thead><tr><th>시공 공간</th><th>예상 수량</th><th>홈핏 600</th><th>터치핏 600</th></tr></thead>
+            <thead><tr><th>시공 공간</th><th>예상 수량</th>${roomProducts.map((product) => `<th>${esc(product.title.replace(/^대디핏\s*/, ""))}</th>`).join("")}</tr></thead>
             <tbody>${rows}</tbody>
           </table>
         </div>
@@ -1000,11 +1035,11 @@
       qty1200: data.qty1200,
     };
 
-    const productBlocks = PRODUCTS
+    const productBlocks = productsForMode(data.quoteMode)
       .map((product) => productBlock(product, qtyByKey[product.qtyKey]))
       .join("\n\nㅡ\n\n");
     const roomBlocks = (data.optRoom && data.rooms.length > 0)
-      ? `\n\nㅡ\n\n[ 방 추가 견적 ]\n\n${data.rooms.map((room) => ROOM_PRODUCTS.map((product) => roomProductBlock(product, room)).join("\n\nㅡ\n\n")).join("\n\nㅡ\n\n")}`
+      ? `\n\nㅡ\n\n[ 방 추가 견적 ]\n\n${data.rooms.map((room) => roomProductsForMode(data.quoteMode).map((product) => roomProductBlock(product, room)).join("\n\nㅡ\n\n")).join("\n\nㅡ\n\n")}`
       : "";
     const memoBlock = data.optMemo && data.memoText
       ? `\n\n━━━━━━━━━━━━━━\n\n[ 메모 ]\n\n${data.memoText}`
@@ -1069,10 +1104,7 @@ ${productBlocks}${roomBlocks}
 
 [ 컬러 안내 ]
 
-■ 홈핏 라인
-밀크 화이트 / 오트 베이지 / 스톤 그레이
-
-■ 터치핏 라인
+${data.quoteMode === "soomgo" ? "" : "■ 홈핏 라인\n밀크 화이트 / 오트 베이지 / 스톤 그레이\n\n"}■ 터치핏 라인
 스킨 베이지
 
 ※ 실제 색상은 조명, 바닥재 색상, 촬영 환경에 따라 차이가 있을 수 있습니다.
@@ -1437,6 +1469,9 @@ ${memoBlock}
   }
 
   $("btnGenerate").addEventListener("click", generate);
+  document.querySelectorAll("[data-quote-mode]").forEach((button) => {
+    button.addEventListener("click", () => setQuoteMode(button.dataset.quoteMode));
+  });
   $("btnCopy").addEventListener("click", copyOutput);
   $("btnCopyImage").addEventListener("click", copyQuoteImage);
   $("previewCopyImage").addEventListener("click", copyQuoteImage);
